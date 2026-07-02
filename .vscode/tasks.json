@@ -1,0 +1,198 @@
+{
+  "version": "2.0.0",
+  "presentation": {
+    "reveal": "always",
+    "revealProblems": "onProblem"
+  },
+  "type": "shell",
+  "linux": {
+    "options": {
+      "cwd": "build/linux/gmake/",
+      "problemMatcher": {
+        "base": "$gcc",
+        "fileLocation": [
+          "relative",
+          "${workspaceFolder}/build/linux/gmake/"
+        ]
+      }
+    }
+  },
+  "osx": {
+    "options": {
+      "cwd": "build/mac/gmake/",
+      "problemMatcher": {
+        "base": "$gcc",
+        "fileLocation": [
+          "relative",
+          "${workspaceFolder}/build/mac/gmake/"
+        ]
+      }
+    }
+  },
+  "windows": {
+    "options": {
+      "cwd": "build/windows/gmake/",
+      "shell": {
+        "executable": "cmd.exe",
+        "args": [
+          "/d",
+          "/c"
+        ]
+      },
+      "problemMatcher": {
+        "base": "$gcc",
+        "fileLocation": [
+          "relative",
+          "${workspaceFolder}/build/windows/gmake/"
+        ]
+      }
+    }
+  },
+  "tasks": [
+    {
+      "label": "Refresh orx-mrt-demo project files",
+      "group": "build",
+      "type": "shell",
+      "command": "./premake4",
+      "windows": {
+        "command": "premake4.exe gmake"
+      },
+      "options": {
+        "cwd": "${workspaceFolder}/build/"
+      }
+    },
+    {
+      "label": "Build orx-mrt-demo (debug, profile, release, web)",
+      "dependsOrder": "sequence",
+      "dependsOn": [
+        "Build orx-mrt-demo (debug)",
+        "Build orx-mrt-demo (profile)",
+        "Build orx-mrt-demo (release)",
+        "Build orx-mrt-demo (web)"
+      ],
+      "problemMatcher": "$gcc"
+    },
+    {
+      "label": "Build orx-mrt-demo (debug)",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "linux": {
+        "command": "make -j config=debug64"
+      },
+      "osx": {
+        "command": "make -j config=debuguniv64"
+      },
+      "windows": {
+        "command": "mingw32-make.exe -j config=debug64"
+      }
+    },
+    {
+      "label": "Build orx-mrt-demo (profile)",
+      "group": "build",
+      "type": "shell",
+      "linux": {
+        "command": "make -j config=profile64"
+      },
+      "osx": {
+        "command": "make -j config=profileuniv64"
+      },
+      "windows": {
+        "command": "mingw32-make.exe -j config=profile64"
+      }
+    },
+    {
+      "label": "Build orx-mrt-demo (release)",
+      "group": "build",
+      "type": "shell",
+      "linux": {
+        "command": "make -j config=release64"
+      },
+      "osx": {
+        "command": "make -j config=releaseuniv64"
+      },
+      "windows": {
+        "command": "mingw32-make.exe -j config=release64"
+      }
+    },
+    {
+      "label": "Build orx-mrt-demo (web)",
+      "dependsOn": [
+        "Build orx-mrt-demo (release)"
+      ],
+      "group": "build",
+      "type": "shell",
+      "command": "emmake make -j config=releaseweb"
+    },
+    {
+      "label": "Run orx-mrt-demo (debug)",
+      "dependsOn": [
+        "Build orx-mrt-demo (debug)"
+      ],
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      },
+      "type": "process",
+      "command": "orx-mrt-demod",
+      "windows": {
+        "command": "orx-mrt-demod.exe"
+      },
+      "options": {
+        "cwd": "${workspaceFolder}/bin/"
+      }
+    },
+    {
+      "label": "Run orx-mrt-demo (profile)",
+      "dependsOn": [
+        "Build orx-mrt-demo (profile)"
+      ],
+      "group": {
+        "kind": "test",
+        "isDefault": false
+      },
+      "type": "process",
+      "command": "orx-mrt-demop",
+      "windows": {
+        "command": "orx-mrt-demop.exe"
+      },
+      "options": {
+        "cwd": "${workspaceFolder}/bin/"
+      }
+    },
+    {
+      "label": "Run orx-mrt-demo (release)",
+      "dependsOn": [
+        "Build orx-mrt-demo (release)"
+      ],
+      "group": {
+        "kind": "test",
+        "isDefault": false
+      },
+      "type": "process",
+      "command": "orx-mrt-demo",
+      "windows": {
+        "command": "orx-mrt-demo.exe"
+      },
+      "options": {
+        "cwd": "${workspaceFolder}/bin/"
+      }
+    },
+    {
+      "label": "Run orx-mrt-demo (web)",
+      "dependsOn": [
+        "Build orx-mrt-demo (web)"
+      ],
+      "group": {
+        "kind": "test",
+        "isDefault": false
+      },
+      "type": "shell",
+      "command": "emrun index.html",
+      "options": {
+        "cwd": "${workspaceFolder}/bin/web/"
+      }
+    }
+  ]
+}
