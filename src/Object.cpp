@@ -56,13 +56,63 @@ void Label::Update(const orxCLOCK_INFO &_rstInfo)
 
   orxVECTOR vMousePosition = orxVECTOR_0;
   orxVECTOR vWorldPosition = orxVECTOR_0;
-  orxVIEWPORT *pstViewport = orxViewport_Get("DisplayViewport");
+  orxVIEWPORT *pstViewport = orxViewport_Get("MainViewport");
+
+#ifdef PLACEHOLDER
+  orxAABOX stViewportBox;
+  orxFLOAT fCorrectionRatio;
+
+  // Correct mouse pointer location to match the viewport location and viewport aspect ratio
+  // Code is from the orx function orxRender_Home_GetWorldPosition
+  /* Gets viewport box */
+  orxViewport_GetBox(pstViewport, &stViewportBox);
+
+  if (orxFALSE)
+  {
+    /* Gets viewport correction ratio */
+    fCorrectionRatio = orxViewport_GetCorrectionRatio(pstViewport);
+
+    /* Has one? */
+    if (fCorrectionRatio != orxFLOAT_1)
+    {
+      orxFLOAT fDelta;
+
+      /* Should correct horizontally? */
+      if (fCorrectionRatio < orxFLOAT_1)
+      {
+        /* Gets rendering limit delta using correction ratio */
+        fDelta = orx2F(0.5f) * (orxFLOAT_1 - fCorrectionRatio) * (stViewportBox.vBR.fX - stViewportBox.vTL.fX);
+
+        /* Updates viewport */
+        stViewportBox.vTL.fX += fDelta;
+        stViewportBox.vBR.fX -= fDelta;
+      }
+      else
+      {
+        /* Gets rendering limit delta using correction ratio */
+        fDelta = orx2F(0.5f) * (orxFLOAT_1 - (orxFLOAT_1 / fCorrectionRatio)) * (stViewportBox.vBR.fY - stViewportBox.vTL.fY);
+
+        /* Updates viewport */
+        stViewportBox.vTL.fY += fDelta;
+        stViewportBox.vBR.fY -= fDelta;
+      }
+    }
+  }
+  orxLOG("Box TL: (%g, %g) BR: (%g, %g)", stViewportBox.vTL.fX, stViewportBox.vTL.fY, stViewportBox.vBR.fX, stViewportBox.vBR.fY);
+
+  // Translate the mouse position to be within viewport bounds
+  orxVector_Sub(&vMousePosition, &vMousePosition, &stViewportBox.vTL);
+
+#endif
+
+  // Get the mouse position within the viewport bounding box
   if (orxRender_GetWorldPosition(orxMouse_GetPosition(&vMousePosition), pstViewport, &vWorldPosition) == orxNULL)
   {
     // Mouse is outside of the viewport so there isn't anything to update
     return;
   }
 
+  // Find the byte offset within the texture's bitmap data that matches the mouse's position within the viewport
   orxU32 u32Offset = static_cast<orxU32>(vMousePosition.fX) * 4 + static_cast<orxU32>(vMousePosition.fY) * 4 * static_cast<orxU32>(fWidth);
 
   if (u32Offset >= u32Bytes)
