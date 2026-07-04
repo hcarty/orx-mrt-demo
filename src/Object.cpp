@@ -56,7 +56,7 @@ void Label::Update(const orxCLOCK_INFO &_rstInfo)
 
   orxVECTOR vMousePosition = orxVECTOR_0;
   orxVECTOR vWorldPosition = orxVECTOR_0;
-  orxVIEWPORT *pstViewport = orxViewport_Get("MainViewport");
+  orxVIEWPORT *pstViewport = orxViewport_Get("DisplayViewport");
   if (orxRender_GetWorldPosition(orxMouse_GetPosition(&vMousePosition), pstViewport, &vWorldPosition) == orxNULL)
   {
     // Mouse is outside of the viewport so there isn't anything to update
